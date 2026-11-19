@@ -1,209 +1,99 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
-#define MAX 10000
+int comp, swaps, shifts;
 
-int comparisons, swaps, shifts;
-
-/* Bubble Sort */
-void bubbleSort(int a[], int n)
+void bubble(int a[], int n)
 {
-    int i, j, temp, flag;
+    int i,j,t,flag;
+    comp=swaps=0;
 
-    comparisons = 0;
-    swaps = 0;
-
-    for(i = 0; i < n - 1; i++)
+    for(i=0;i<n-1;i++)
     {
-        flag = 0;
-
-        for(j = 0; j < n - i - 1; j++)
+        flag=0;
+        for(j=0;j<n-i-1;j++)
         {
-            comparisons++;
-
-            if(a[j] > a[j + 1])
+            comp++;
+            if(a[j]>a[j+1])
             {
-                temp = a[j];
-                a[j] = a[j + 1];
-                a[j + 1] = temp;
-
+                t=a[j]; a[j]=a[j+1]; a[j+1]=t;
                 swaps++;
-                flag = 1;
+                flag=1;
             }
         }
-
-        if(flag == 0)
-            break;
+        if(!flag) break;
     }
 }
 
-/* Selection Sort */
-void selectionSort(int a[], int n)
+void selection(int a[], int n)
 {
-    int i, j, min, temp;
+    int i,j,min,t;
+    comp=swaps=0;
 
-    comparisons = 0;
-    swaps = 0;
-
-    for(i = 0; i < n - 1; i++)
+    for(i=0;i<n-1;i++)
     {
-        min = i;
-
-        for(j = i + 1; j < n; j++)
+        min=i;
+        for(j=i+1;j<n;j++)
         {
-            comparisons++;
-
-            if(a[j] < a[min])
-                min = j;
+            comp++;
+            if(a[j]<a[min]) min=j;
         }
-
-        if(min != i)
+        if(min!=i)
         {
-            temp = a[i];
-            a[i] = a[min];
-            a[min] = temp;
-
+            t=a[i]; a[i]=a[min]; a[min]=t;
             swaps++;
         }
     }
 }
 
-/* Insertion Sort */
-void insertionSort(int a[], int n)
+void insertion(int a[], int n)
 {
-    int i, j, key;
+    int i,j,key;
+    comp=shifts=0;
 
-    comparisons = 0;
-    shifts = 0;
-
-    for(i = 1; i < n; i++)
+    for(i=1;i<n;i++)
     {
-        key = a[i];
-        j = i - 1;
-
-        while(j >= 0)
+        key=a[i];
+        j=i-1;
+        while(j>=0)
         {
-            comparisons++;
-
-            if(a[j] > key)
+            comp++;
+            if(a[j]>key)
             {
-                a[j + 1] = a[j];
+                a[j+1]=a[j];
                 shifts++;
                 j--;
             }
-            else
-                break;
+            else break;
         }
-
-        a[j + 1] = key;
+        a[j+1]=key;
     }
 }
 
-/* Generate input arrays */
-void generateArray(int a[], int n, int type)
-{
-    int i, temp;
-
-    for(i = 0; i < n; i++)
-        a[i] = (i + 1) * 10;
-
-    if(type == 1)
-    {
-        /* Nearly sorted: last 20 values reversed */
-        int start = n - 20;
-
-        if(start < 0)
-            start = 0;
-
-        for(i = 0; i < (n - start) / 2; i++)
-        {
-            temp = a[start + i];
-            a[start + i] = a[n - 1 - i];
-            a[n - 1 - i] = temp;
-        }
-    }
-
-    else if(type == 2)
-    {
-        /* Reverse sorted */
-        for(i = 0; i < n / 2; i++)
-        {
-            temp = a[i];
-            a[i] = a[n - 1 - i];
-            a[n - 1 - i] = temp;
-        }
-    }
-
-    else if(type == 3)
-    {
-        /* Random order */
-        for(i = n - 1; i > 0; i--)
-        {
-            int j = rand() % (i + 1);
-
-            temp = a[i];
-            a[i] = a[j];
-            a[j] = temp;
-        }
-    }
-}
-
-/* Main Function */
 int main()
 {
-    int original[MAX], a[MAX];
-    int sizes[] = {100, 1000, 10000};
-    int n, i, j;
+    int a[100],b[100],n=6,i;
 
-    char *orders[] = {
-        "Sorted",
-        "Nearly Sorted",
-        "Reverse Sorted",
-        "Random"
-    };
+    int x[]={45,12,67,23,89,34};
 
-    srand(1);
+    for(i=0;i<n;i++) a[i]=x[i];
 
-    for(i = 0; i < 3; i++)
-    {
-        n = sizes[i];
+    bubble(a,n);
+    printf("Bubble: Comparisons=%d Swaps=%d\n",comp,swaps);
 
-        printf("\nArray Size: %d\n", n);
+    for(i=0;i<n;i++) a[i]=x[i];
 
-        for(j = 0; j < 4; j++)
-        {
-            generateArray(original, n, j);
+    selection(a,n);
+    printf("Selection: Comparisons=%d Swaps=%d\n",comp,swaps);
 
-            printf("\nInput: %s\n", orders[j]);
+    for(i=0;i<n;i++) a[i]=x[i];
 
-            for(int k = 0; k < n; k++)
-                a[k] = original[k];
+    insertion(a,n);
+    printf("Insertion: Comparisons=%d Shifts=%d\n",comp,shifts);
 
-            bubbleSort(a, n);
-
-            printf("Bubble Sort: Comparisons = %d, Swaps = %d\n",
-                   comparisons, swaps);
-
-            for(int k = 0; k < n; k++)
-                a[k] = original[k];
-
-            selectionSort(a, n);
-
-            printf("Selection Sort: Comparisons = %d, Swaps = %d\n",
-                   comparisons, swaps);
-
-            for(int k = 0; k < n; k++)
-                a[k] = original[k];
-
-            insertionSort(a, n);
-
-            printf("Insertion Sort: Comparisons = %d, Shifts = %d\n",
-                   comparisons, shifts);
-        }
-    }
+    printf("Sorted array: ");
+    for(i=0;i<n;i++) printf("%d ",a[i]);
 
     return 0;
 }
-
